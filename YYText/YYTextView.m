@@ -178,6 +178,7 @@ typedef NS_ENUM(NSUInteger, YYTextMoveDirection) {
         
         unsigned int insideUndoBlock : 1;
         unsigned int firstResponderBeforeUndoAlert : 1;
+        unsigned int handleingDictationEndProcess : 2;
     } _state;
 }
 
@@ -1421,6 +1422,7 @@ typedef NS_ENUM(NSUInteger, YYTextMoveDirection) {
 /// Replace the range with the text, and change the `_selectTextRange`.
 /// The caller should make sure the `range` and `text` are valid before call this method.
 - (void)_replaceRange:(YYTextRange *)range withText:(NSString *)text notifyToDelegate:(BOOL)notify{
+    [_innerText replaceCharactersInRange:range.asRange withString:text];
     if (NSEqualRanges(range.asRange, _selectedTextRange.asRange)) {
         if (notify) [_inputDelegate selectionWillChange:self];
         NSRange newRange = NSMakeRange(0, 0);
@@ -1468,7 +1470,6 @@ typedef NS_ENUM(NSUInteger, YYTextMoveDirection) {
     }
     if (notify) [_inputDelegate textWillChange:self];
     NSRange newRange = NSMakeRange(range.asRange.location, text.length);
-    [_innerText replaceCharactersInRange:range.asRange withString:text];
     [_innerText yy_removeDiscontinuousAttributesInRange:newRange];
     if (notify) [_inputDelegate textDidChange:self];
 }
@@ -3392,7 +3393,27 @@ typedef NS_ENUM(NSUInteger, YYTextMoveDirection) {
     [self _scrollRangeToVisible:_selectedTextRange];
 }
 
+#pragma mark - UITextInput Protocol
+
+- (void)dictationRecordingDidEnd
+{
+    _state.handleingDictationEndProcess = YES;
+}
+
+- (void)dictationRecognitionFailed
+{
+    _state.handleingDictationEndProcess = NO;
+}
+
+- (void)insertDictationResult:(NSArray<UIDictationPhrase *> *)dictationResult
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        _state.handleingDictationEndProcess = NO;
+    });
+}
+
 - (void)replaceRange:(YYTextRange *)range withText:(NSString *)text {
+    if (_state.handleingDictationEndProcess) return;
     if (!range) return;
     if (!text) text = @"";
     if (range.asRange.length == 0 && text.length == 0) return;
