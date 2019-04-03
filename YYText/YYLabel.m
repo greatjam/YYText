@@ -655,7 +655,7 @@ static dispatch_queue_t YYLabelGetReleaseQueue() {
             case NSLineBreakByTruncatingHead:
             case NSLineBreakByTruncatingTail:
             case NSLineBreakByTruncatingMiddle: {
-                _innerText.yy_lineBreakMode = NSLineBreakByWordWrapping;
+                _innerText.yy_lineBreakMode = NSLineBreakByCharWrapping;
             } break;
             default: break;
         }
@@ -778,7 +778,7 @@ static dispatch_queue_t YYLabelGetReleaseQueue() {
         case NSLineBreakByWordWrapping:
         case NSLineBreakByCharWrapping:
         case NSLineBreakByClipping: {
-            _innerContainer.truncationType = YYTextTruncationTypeNone;
+            _innerContainer.truncationType = YYTextTruncationTypeEnd;
             _innerText.yy_lineBreakMode = lineBreakMode;
         } break;
         case NSLineBreakByTruncatingHead:{
@@ -858,7 +858,7 @@ static dispatch_queue_t YYLabelGetReleaseQueue() {
             case NSLineBreakByTruncatingHead:
             case NSLineBreakByTruncatingTail:
             case NSLineBreakByTruncatingMiddle: {
-                _innerText.yy_lineBreakMode = NSLineBreakByWordWrapping;
+                _innerText.yy_lineBreakMode = NSLineBreakByCharWrapping;
             } break;
             default: break;
         }
