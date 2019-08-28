@@ -647,7 +647,7 @@ return style. _attr_;
     YYTextRunDelegate *delegate = [YYTextRunDelegate new];
     delegate.ascent = ascent;
     delegate.descent = descent;
-    delegate.width = bounding.size.width + 2 * bounding.origin.x;
+    delegate.width = bounding.size.width + 2 * bounding.origin.x + 2;
     
     YYTextAttachment *attachment = [YYTextAttachment new];
     attachment.contentMode = UIViewContentModeScaleAspectFit;
