@@ -1476,7 +1476,13 @@ typedef NS_ENUM(NSUInteger, YYTextMoveDirection) {
 
 /// Save current typing attributes to the attributes holder.
 - (void)_updateAttributesHolder {
+    NSUInteger index = _selectedTextRange.end.offset == 0 ? 0 : _selectedTextRange.end.offset - 1;
+    NSDictionary *attributes = [_innerText yy_attributesAtIndex:index];
     if (_innerText.length > 0) {
+        if (!attributes.allKeys.count || [attributes.allKeys containsObject:@"YYTextAttachment"]) {
+            return;
+        }
+        
         NSUInteger index = _selectedTextRange.end.offset == 0 ? 0 : _selectedTextRange.end.offset - 1;
         NSDictionary *attributes = [_innerText yy_attributesAtIndex:index];
         if (!attributes) attributes = @{};
@@ -2178,7 +2184,11 @@ typedef NS_ENUM(NSUInteger, YYTextMoveDirection) {
     
     [self _setAttributedText:text];
     if (_innerText.length > 0) {
-        _typingAttributesHolder.yy_attributes = [_innerText yy_attributesAtIndex:_innerText.length - 1];
+        NSDictionary *lastAttributes = [_innerText yy_attributesAtIndex:_innerText.length - 1];
+        // YYTextAttachmenth时不重设typingAttributes，防止属性丢失
+        if (![lastAttributes.allKeys containsObject:@"YYTextAttachment"]) {
+            _typingAttributesHolder.yy_attributes = [_innerText yy_attributesAtIndex:_innerText.length - 1];
+        }
     }
     
     [self _updateOuterProperties];
