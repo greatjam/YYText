@@ -778,7 +778,7 @@ static dispatch_queue_t YYLabelGetReleaseQueue() {
         case NSLineBreakByWordWrapping:
         case NSLineBreakByCharWrapping:
         case NSLineBreakByClipping: {
-            _innerContainer.truncationType = YYTextTruncationTypeEnd;
+            _innerContainer.truncationType = YYTextTruncationTypeNone;
             _innerText.yy_lineBreakMode = lineBreakMode;
         } break;
         case NSLineBreakByTruncatingHead:{
